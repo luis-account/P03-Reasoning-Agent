@@ -3,7 +3,6 @@ AI2 Lab P03 Reasoning Agent
 
 
 # Prompts
-
 ## Draft
 The results of this prompt were very bad. They did not produce good output in the profile.txt file. The main issue was that the llm did not answer the user prompt.
 
@@ -57,4 +56,52 @@ User query: {user_prompt}
 
 Plan: {plan}
 """
+```
+
+### Make the model talk
+1. Introduce loop to separate tool calls from chat responses
+2. Add 4th step to planner query, to prompt for explicity response. ("Formulate a chat response like a conversational agent that provides the answer")
+
+```python3
+while True:
+    response = ollama.chat(
+        LLAMA_MODEL,
+        messages=messages,
+        tools=[read_profile, add_to_profile],
+    )
+
+    if not response.message.tool_calls:
+        print("Final answer:", response.message.content)
+        break
+
+    messages.append(response.message)
+
+    for tool in response.message.tool_calls:
+        func = available_functions.get(tool.function.name)
+        if func:
+            result = func(**tool.function.arguments)
+            messages.append({
+                'role': 'tool',
+                'content': str(result) if result else 'Done.',
+            })
+        else:
+            messages.append({
+                'role': 'tool',
+                'content': f'Error: unknown function {tool.function.name}',
+            })
+```
+
+#### First Results
+```Text
+User Prompt: "My name is Joe, what is 2+2?"
+```
+```text
+profile.txt:
+{'type': 'string', 'description': 'The user's name is Joe'};
+{"type": "string", "description": "The result of the calculation 2+2 is 4"};
+```
+
+```text
+Follow up:
+Here's a follow-up question for you, Joe: What does your dog look like?
 ```
