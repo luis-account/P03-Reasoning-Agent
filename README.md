@@ -165,3 +165,29 @@ Evaluate potential storage solutions in an on-prem environment.;
 Azure supports Kubernetes Service (AKS), which provides managed container clusters across virtual machines in Azure;;
 On-premises clusters require manual setup and management, including scaling nodes as needed.;
 ```
+
+## Introducing categories
+-> One problem is that it does not seem to have enough guidance in what data to grab.
+The goal of this iteration was to counter act this by actively providing "buckets" to store the information into. On top of that the prompts were refined to be more clear on what is asked.
+
+### Examples of clarifying the prompt
+
+```txt
+Note that the add functions take a string as a parameter. Do **not** use special formatting such as json and rely on plain text.
+```
+* Specifying formats
+* Explainig parameters
+* emphasize using markdown formatting
+
+```txt
+You are the planner and smarter model.
+```
+* assigning roles
+* explaining roles
+
+```txt
+<user-query> This is the start of the user query:
+User query: {user_prompt}
+</user-query> This is the end of the user query.
+```
+* separating information (query / system instruction)
