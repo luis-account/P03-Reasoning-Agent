@@ -191,3 +191,8 @@ User query: {user_prompt}
 </user-query> This is the end of the user query.
 ```
 * separating information (query / system instruction)
+
+## Introducing specific tools
+In order to get more information on the user we also provide specific functions.
+E.g. we have a function that grabs a users ip and compares it to a local location database
+for ip addresses. Therefore the model can figure out more information on the user by calling this function.
