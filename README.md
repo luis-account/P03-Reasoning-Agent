@@ -1,8 +1,11 @@
 # P03-Reasoning-Agent
 AI2 Lab P03 Reasoning Agent
 
+Agents can be used for good and bad. With this project we want to explore how someone could use an llm agent to analyze a users prompts and gain unwanted insights.
 
-# Prompts
+# Prompts and Setup
+This section documents what iterations the prompts and agent setup have gone through to arrive at the solution in the code.
+
 ## Draft
 The results of this prompt were very bad. They did not produce good output in the profile.txt file. The main issue was that the llm did not answer the user prompt.
 
