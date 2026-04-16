@@ -199,3 +199,69 @@ User query: {user_prompt}
 In order to get more information on the user we also provide specific functions.
 E.g. we have a function that grabs a users ip and compares it to a local location database
 for ip addresses. Therefore the model can figure out more information on the user by calling this function.
+
+## Defining a communication interface for the planner and executor
+One problem that arose was that the planner and executor were out of sync. The planner created a plan that was just a list:
+```txt
+## Extract personal information
+1. store name
+2. store age
+```
+This seems to have a negative effect on the overall performance and less information is extracted.
+
+The common interface is based on following a format for calling the function:
+```txt
+STEP 1: add_to_personal_profile("I am looking for help setting up group policies in macOS Terminal")
+STEP 2: add_to_work_profile("Technical discussions about software architecture patterns (serverless..)
+STEP 3: add_to_communication_profile("Casual, informed, professional")
+```
+
+### The importance of Rules
+```txt
+Rules:
+- One fact per CALL. Do not combine multiple facts into one call.
+- Facts must be plain English strings in quotes. No JSON, no special formatting.
+- Extract as much information as possible.
+- Find and store at least 5 facts for every category
+- Find at least 20 facts in the query
+- Include a call to the function get_user_location() to get the users location
+- End with STEP N: DONE
+```
+
+## Building Resilience
+In order to sustain the loop it is necessary to be resilient. Often this smaller model is hallucinating what the params are or in what format they are expected.
+Therefore it is important to have a clear interface definition and have enough catch blocks for different call errors.
+
+```python
+if response.message.tool_calls:
+        for tool in response.message.tool_calls:
+            func = available_functions.get(tool.function.name)
+            if func:
+                try:
+                    args = tool.function.arguments
+                    if isinstance(args, str):
+                        args = {"fact": args}
+                    
+                    result = func(**args)
+                    messages.append({
+                        'role': 'tool',
+                        'content': str(result) if result else 'Done.',
+                    })
+                except TypeError as e:
+                    error_msg = f"Error: Failed to call {tool.function.name}. {e}. Please correct your parameters and try again."
+                    print(f"Model fumbled: {error_msg}")
+                    messages.append({
+                        'role': 'tool',
+                        'content': error_msg,
+                    })
+                except Exception as e:
+                    messages.append({
+                        'role': 'tool',
+                        'content': f"Error executing tool: {e}",
+                    })
+            else:
+                messages.append({
+                    'role': 'tool',
+                    'content': f'Error: unknown function {tool.function.name}',
+                })
+```
