@@ -228,6 +228,32 @@ Rules:
 - End with STEP N: DONE
 ```
 
+## Extracting the right information
+When testing the model seems to be lost on what data to extract. The boundary between work and personal does not seem
+to be quite that clear to the mode. Therefore I generated a list of known things I would want to put into each profile.
+```txt
+**PERSONAL** (who the user is):
+- Name, age, gender, nationality, location
+- Education level, field of study
+- Hobbies, interests, preferences
+- Languages spoken
+- Life circumstances mentioned
+- Location with get_user_location() tool call
+
+**WORK** (what the user does):
+- Profession or role
+- Projects, tasks, goals mentioned
+- Tools, technologies, frameworks referenced
+- Domain expertise implied by terminology
+
+**COMMUNICATION** (how the user writes):
+- Formality level (casual, neutral, formal)
+- Vocabulary complexity (simple, technical, academic)
+- Emotional tone (frustrated, curious, confident, uncertain)
+- Sentence structure patterns (short/direct, long/elaborate)
+- Politeness markers, slang, or jargon
+```
+
 ## Building Resilience
 In order to sustain the loop it is necessary to be resilient. Often this smaller model is hallucinating what the params are or in what format they are expected.
 Therefore it is important to have a clear interface definition and have enough catch blocks for different call errors.
